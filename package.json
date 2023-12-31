@@ -1,5 +1,6 @@
 {
-  "name": "task4",
+  "name": "T-Note",
+  "description": "T-Note, A Note taking app. Stores note data in a live JSON server.",
   "private": true,
   "version": "0.0.0",
   "type": "module",
