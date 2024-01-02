@@ -25,10 +25,7 @@ const style = {
 export const AddNote = () => {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
-  const handleClose = () => {
-    console.log(open, "open");
-    setOpen(false);
-  };
+  const handleClose = () => setOpen(true);
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const openColor = Boolean(anchorEl);
@@ -39,11 +36,12 @@ export const AddNote = () => {
     setAnchorEl(null);
   };
   return (
-    <div
-      onClick={handleOpen}
-      className=" break-inside-avoid flex justify-center items-center border-dashed border-2 border-slate-400 rounded-lg  p-5  flex-col gap-5 mb-5 max-w-md h-40 "
-    >
-      <IoMdAddCircle style={{ fontSize: "2rem" }} className="text-slate-400" />
+    <div className=" break-inside-avoid flex justify-center items-center border-dashed border-2 border-slate-400 rounded-lg  p-5  flex-col gap-5 mb-5 max-w-md h-40 ">
+      <IoMdAddCircle
+        onClick={handleOpen}
+        style={{ fontSize: "2rem" }}
+        className="text-slate-400"
+      />
       <Modal
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"
@@ -78,7 +76,7 @@ export const AddNote = () => {
               ></textarea>
               <div className="flex justify-between">
                 <button
-                  onClick={handleClose}
+                  onClick={() => setOpen(false)}
                   className="px-3 py-2 rounded-lg bg-red-100"
                 >
                   cancel

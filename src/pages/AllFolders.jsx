@@ -1,23 +1,11 @@
 import { Folder } from "../components/Folder";
+import { TimeSort } from "../components/TimeSort";
 
 const AllFolders = () => {
   return (
     <div className=" container px-2 py-4 mt-5 flex flex-col items-center lg:items-start">
       <h1 className="text-5xl">All Folders</h1>
-      <ul className="my-4 flex gap-8 md:gap-14">
-        <li className="cursor-pointer text-sm md:text-md relative active">
-          All
-        </li>
-        <li className="cursor-pointer text-sm md:text-md relative active">
-          Todays
-        </li>
-        <li className="cursor-pointer text-sm md:text-md relative">
-          This Week
-        </li>
-        <li className="cursor-pointer text-sm md:text-md relative">
-          This Month
-        </li>
-      </ul>
+      <TimeSort />
       <div className="my-10 gap-8 flex flex-wrap justify-center lg:justify-start">
         {paraData.map((_, index) => (
           <Folder key={index} home={false} />

@@ -14,6 +14,7 @@ import Modal from "@mui/material/Modal";
 import Fade from "@mui/material/Fade";
 import Tooltip from "@mui/material/Tooltip";
 import { Folder } from "./Folder";
+import { TimeSort } from "./TimeSort";
 const style = {
   position: "absolute",
   top: "50%",
@@ -30,20 +31,7 @@ export const Folders = () => {
   return (
     <div className="container  flex flex-col w-full items-center lg:items-start shadow-2xl rounded-[20px] sticky top-[-130px] z-10 bg-white px-4 py-4 mt-5">
       <h1 className="text-5xl">Recent Folders</h1>
-      <ul className="my-4 flex gap-8 md:gap-14 border-b py-2">
-        <li className="cursor-pointer text-sm md:text-md relative active">
-          All
-        </li>
-        <li className="cursor-pointer text-sm md:text-md relative active">
-          Todays
-        </li>
-        <li className="cursor-pointer text-sm md:text-md relative">
-          This Week
-        </li>
-        <li className="cursor-pointer text-sm md:text-md relative">
-          This Month
-        </li>
-      </ul>
+      <TimeSort />
       <div
         className="mt-10 max-w-full "
         style={{ width: "calc(100vw - 70px)" }}
@@ -97,7 +85,7 @@ export const Folders = () => {
 export const AddFolder = () => {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleClose = () => setOpen(true);
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const openColor = Boolean(anchorEl);
@@ -110,9 +98,9 @@ export const AddFolder = () => {
   return (
     <div className="w-100">
       <IoMdAddCircle
+        onClick={handleOpen}
         style={{ fontSize: "2rem" }}
         className="text-slate-400"
-        onClick={handleOpen}
       />
       <Modal
         aria-labelledby="transition-modal-title"
@@ -141,7 +129,10 @@ export const AddFolder = () => {
                 autoFocus
               />
               <div className="flex justify-between">
-                <button className="px-3 py-2 rounded-lg bg-red-100">
+                <button
+                  onClick={() => setOpen(false)}
+                  className="px-3 py-2 rounded-lg bg-red-100"
+                >
                   cancel
                 </button>
                 <div>
@@ -166,15 +157,18 @@ export const AddFolder = () => {
                     transformOrigin={{ horizontal: "right", vertical: "top" }}
                     anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                   >
-                    <MenuItem onClick={handleClose}>
+                    <MenuItem>
                       <div className="p-3 bg-blue-900 rounded-full"></div>
                     </MenuItem>
-                    <MenuItem onClick={handleClose}>
+                    <MenuItem>
                       <div className="p-3 bg-purple-900 rounded-full"></div>
                     </MenuItem>
                   </Menu>
                 </div>
-                <button className="px-3 py-2 rounded-lg bg-green-100">
+                <button
+                  onClick={handleClose}
+                  className="px-3 py-2 rounded-lg bg-green-100"
+                >
                   Add
                 </button>
               </div>

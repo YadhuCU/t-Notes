@@ -23,10 +23,21 @@
   content: "";
   position: absolute;
   bottom: 0;
-  left: 0;
-  right: 0;
+  left: 50%;
+  right: 50%;
   height: 3px;
   background-color: black;
+  animation: enlarge 220ms ease-in-out forwards;
+}
+@keyframes enlarge {
+  0% {
+    left: 50%;
+    right: 50%;
+  }
+  100% {
+    left: 0;
+    right: 0;
+  }
 }
 .add-note input,
 .add-note textarea,
