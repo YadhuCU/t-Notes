@@ -28,7 +28,7 @@ export const Folders = () => {
   return (
     <div className="container  flex flex-col w-full items-center lg:items-start shadow-2xl rounded-[20px] sticky top-[-130px] z-10 bg-white px-4 py-4 mt-5">
       <h1 className="text-5xl">Recent Folders</h1>
-      <TimeSort />
+      <TimeSort type={"folder"} />
       <div
         className="mt-10 max-w-full "
         style={{ width: "calc(100vw - 70px)" }}

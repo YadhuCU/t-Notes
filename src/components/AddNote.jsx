@@ -78,9 +78,9 @@ export const AddNote = ({ currentNote, entry, handlCloseEditMenu }) => {
     handleCancelButton();
     if (!textInput && !textArea) return;
     currentNote && handleCancelButton();
-    const date = formattedDate;
-    const time = formattedTime;
-    const day = formattedDay;
+    const date = formattedDate();
+    const time = formattedTime();
+    const day = formattedDay();
     let response;
 
     if (currentNote) {

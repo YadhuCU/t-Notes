@@ -90,9 +90,9 @@ export const Folder = ({ home, folder }) => {
           </MenuItem>
         </Menu>
       </div>
-      <FaFolder style={{ fontSize: "3rem" }} className="text-slate-600" />
+      <FaFolder style={{ fontSize: "3rem" }} className="text-slate-400" />
       <div>
-        <p className="text-2xl font-bold">
+        <p className="text-2xl font-bold text-stone-600">
           {folder?.title.length > 15
             ? folder?.title.slice(0, 15) + "..."
             : folder?.title}

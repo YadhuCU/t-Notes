@@ -21,7 +21,7 @@ export const Notes = () => {
   return (
     <div className=" container flex flex-col items-center lg:items-start px-2 py-4 mt-5">
       <h1 className="text-5xl">Notes</h1>
-      <TimeSort />
+      <TimeSort type="note" />
       <div className="w-full my-10 columns-[300px]">
         {notes.map((item, index) => (
           <Note key={index} data={item} />

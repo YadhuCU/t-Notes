@@ -69,7 +69,7 @@ export const AddFolder = ({ entry, editFolder, handleCloseEditMenu }) => {
     handleCancelButton();
     if (!textInput) return;
     editFolder && handleCloseEditMenu();
-    const date = formattedDate;
+    const date = formattedDate();
     let response;
 
     if (editFolder) {
