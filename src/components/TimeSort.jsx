@@ -12,7 +12,7 @@ export const TimeSort = () => {
   return (
     <ul
       ref={allList}
-      className="my-4 flex gap-8 md:gap-14 border-b py-2 w-full"
+      className="my-4 flex justify-center lg:justify-start gap-8 md:gap-14 border-b py-2 w-full"
     >
       {["All", "Todays", "This Week", "This Month"].map((item) => (
         <li

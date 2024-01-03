@@ -1,28 +1,28 @@
 /* eslint-disable react/prop-types */
-import { useRef } from "react";
-import { useState } from "react";
-import { FaFile } from "react-icons/fa";
 import { IoMdAddCircle } from "react-icons/io";
-import {
-  Backdrop,
-  Box,
-  Modal,
-  Fade,
-  Menu,
-  MenuItem,
-  IconButton,
-  Tooltip,
-} from "@mui/material";
+import { FaFolder } from "react-icons/fa";
+
+import IconButton from "@mui/material/IconButton";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import "swiper/css";
+
+import Backdrop from "@mui/material/Backdrop";
+import Box from "@mui/material/Box";
+import Modal from "@mui/material/Modal";
+import Fade from "@mui/material/Fade";
+import Tooltip from "@mui/material/Tooltip";
 
 import { colors } from "../utils/colors";
+import { useState } from "react";
+import { formattedDate } from "../utils/formatter";
 import {
-  getAllNoteAPI,
-  updateNoteAPI,
-  uploadNoteAPI,
+  updateFolderAPI,
+  addFolderAPI,
+  getAllFoldersAPI,
 } from "../services/allAPIs";
 import { useDispatch } from "react-redux";
-import { addNotesToStore } from "../redux/addNoteSlice";
-import { formattedDate, formattedDay, formattedTime } from "../utils/formatter";
+import { addFoldersToStore } from "../redux/addFolderSlice";
 
 const style = {
   position: "absolute",
@@ -35,110 +35,93 @@ const style = {
   borderRadius: "20px",
   p: 4,
 };
-
-export const AddNote = ({ currentNote, entry, handlCloseEditMenu }) => {
-  const [open, setOpen] = useState(false);
-  const textAreaRef = useRef(null);
-  const [textInput, setTextInput] = useState(currentNote?.title || "");
-  const [textArea, setTextArea] = useState(currentNote?.body || "");
-  const [color, setColor] = useState(currentNote?.color || "#f5f5f4");
+export const AddFolder = ({ entry, editFolder, handleCloseEditMenu }) => {
+  const [color, setColor] = useState(editFolder?.color || "#f5f5f4");
+  const [textInput, setTextInput] = useState(editFolder?.title || "");
   const dispatch = useDispatch();
 
+  // MUI things
+  const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(true);
-
   const [anchorEl, setAnchorEl] = useState(null);
   const openColor = Boolean(anchorEl);
   const handleClick = (event) => setAnchorEl(event.currentTarget);
   const handleCloseColor = () => setAnchorEl(null);
 
-  const handleKeyPress = (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      textAreaRef.current.focus();
-    }
-  };
-
-  const handleTextInputChange = ({ value }) => setTextInput(value);
-  const handleTextAreaChange = ({ value }) => setTextArea(value);
+  // ------
   const handleColorPick = (color) => setColor(color);
+  const handleTextInputChange = ({ value }) => setTextInput(value);
 
+  // cancel button | reset all state
   const handleCancelButton = () => {
     setTimeout(() => {
       setColor("#f5f5f4");
       setTextInput("");
-      setTextArea("");
     }, 1000);
     setOpen(false);
-    if (currentNote) {
-      handlCloseEditMenu();
+    if (editFolder) {
+      handleCloseEditMenu();
     }
   };
-
+  // upload the folder to db
   const handleUpload = async () => {
     handleCancelButton();
-    if (!textInput && !textArea) return;
-    currentNote && handleCancelButton();
+    if (!textInput) return;
+    editFolder && handleCloseEditMenu();
     const date = formattedDate;
-    const time = formattedTime;
-    const day = formattedDay;
     let response;
 
-    if (currentNote) {
-      // update the existing note in server.
-      const updatedNote = {
-        ...currentNote,
+    if (editFolder) {
+      // update the existing Folder
+      const newFolder = {
+        ...editFolder,
         title: textInput,
-        body: textArea,
+        color,
         date,
-        time,
-        day,
-        color: color,
-      };
-
-      try {
-        response = await updateNoteAPI(currentNote.id, updatedNote);
-        console.log("updation response", response);
-      } catch (error) {
-        console.log("updation Error: ", error);
-      }
-      const { data } = await getAllNoteAPI();
-      dispatch(addNotesToStore([...data].reverse()));
-      handlCloseEditMenu();
-    } else {
-      // create new note and upload it to the server
-      // uploading object
-      console.log("creating new Note");
-      const singleNoteData = {
-        title: textInput,
-        body: textArea,
-        date,
-        time,
-        day,
-        color: color,
       };
       try {
-        response = await uploadNoteAPI(singleNoteData);
+        response = await updateFolderAPI(editFolder.id, newFolder);
+        console.log("Folder Updated Response: ", response);
       } catch (error) {
-        console.log("HandleUpload->uploadNoteAPI Error: ", error);
+        console.log("Folder Uploading Error: ", error);
       }
-      if (response.status >= 200 && response.status <= 300) {
-        const { data } = await getAllNoteAPI();
-        dispatch(addNotesToStore([...data].reverse()));
+      if (response.status >= 200 && response.status < 300) {
+        // success (file creation)
+        const { data } = await getAllFoldersAPI();
+        dispatch(addFoldersToStore([...data].reverse()));
       } else {
-        console.log("Fetching Error: ", response);
+        // failed (file creation)
+        console.log("Stataus code error ", response.status);
+      }
+    } else {
+      // folder object
+      const newFolder = {
+        title: textInput,
+        color,
+        date,
+        notes: [],
+      };
+      try {
+        response = await addFolderAPI(newFolder);
+        console.log("Folder Uploaded Response: ", response);
+      } catch (error) {
+        console.log("Folder Uploading Error: ", error);
+      }
+      if (response.status >= 200 && response.status < 300) {
+        // success (file creation)
+        const { data } = await getAllFoldersAPI();
+        dispatch(addFoldersToStore([...data].reverse()));
+      } else {
+        // failed (file creation)
+        console.log("Stataus code error ", response.status);
       }
     }
   };
 
   return (
-    <div
-      className={
-        currentNote
-          ? `w-full`
-          : `mx-auto max-w-sm break-inside-avoid flex justify-center items-center border-dashed border-2 border-slate-400 rounded-lg  p-5  flex-col gap-5 mb-5 h-40 `
-      }
-    >
-      {currentNote ? (
+    <div className="w-100">
+      {entry ? (
         <div onClick={handleOpen}>{entry}</div>
       ) : (
         <IoMdAddCircle
@@ -165,26 +148,16 @@ export const AddNote = ({ currentNote, entry, handlCloseEditMenu }) => {
             <div className="add-note flex flex-col gap-5 mb-5 max-w-md ">
               <label className="flex items-center gap-2 opacity-50">
                 {" "}
-                {<FaFile />}Create New Note
+                {<FaFolder />}Create New Folder
               </label>
               <input
                 id="note-title"
                 type="text"
-                placeholder="Title"
-                autoFocus
-                onKeyDown={handleKeyPress}
-                value={textInput}
+                placeholder="Folder Name"
                 onChange={(e) => handleTextInputChange(e.target)}
+                value={textInput}
+                autoFocus
               />
-              <textarea
-                ref={textAreaRef}
-                id="note-body"
-                rows={10}
-                spellCheck={false}
-                placeholder="Content"
-                value={textArea}
-                onChange={(e) => handleTextAreaChange(e.target)}
-              ></textarea>
               <div className="flex justify-between">
                 <button
                   onClick={() => handleCancelButton()}
@@ -219,7 +192,7 @@ export const AddNote = ({ currentNote, entry, handlCloseEditMenu }) => {
                         <div
                           onClick={() => handleColorPick(item)}
                           style={{ backgroundColor: item }}
-                          className="p-3 border-2 border-slate-400 rounded-full"
+                          className="p-3  rounded-full border-2 border-slate-400"
                         ></div>
                       </MenuItem>
                     ))}

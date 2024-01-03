@@ -8,7 +8,7 @@ import { Sidebar } from "./components/Sidebar";
 
 function App() {
   return (
-    <div className="grid">
+    <div className="grid-app">
       <Sidebar />
       <Routes>
         <Route path={"/"} element={<Home />} />

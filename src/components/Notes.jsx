@@ -1,28 +1,31 @@
 import { AddNote } from "./AddNote";
 import { Note } from "./Note";
 import { TimeSort } from "./TimeSort";
-
-const paraData = [
-  "Lorem atat officia voluptate. Culpa proident adipisicingsunt velit enim. Voluptate laboris sint cupidatat ullamco ut ea consectetur et est culpa et culpa duis.",
-  "Lorem  reprehenderit commodo officia dolor Lorem duis la eiusmod. Aliqua reprehenderit commodo ex non excepteur duis sunt velit enim. Voluptate laboris sint cupidatat ullamco ut ea consectetur et est culpa et culpa duis.",
-  "Lorem atat officia voluptate. Culpa proident adipisicingsunt velit enim. Voluptate laboris sint cupidatat ullamco ut ea consectetur et est culpa et culpa duis.",
-  "Lorem atat officia voluptate. Culpa proident adipisicingsunt velit enim. Voluptate laboris sint cupidatat ullamco ut ea consectetur et est culpa et culpa duis.",
-  "Lorem atat officia voluptate. Culpa proident adipisicingsunt velit enim. Voluptate laboris sint cupidatat ullamco ut ea consectetur et est culpa et culpa duis.",
-  "Lorem  reprehenderit commodo officia dolor Lorem duis la eiusmod. Aliqua reprehenderit commodo ex non excepteur duis sunt velit enim. Voluptate laboris sint cupidatat ullamco ut ea consectetur et est culpa et culpa duis.",
-  "Lorem  reprehenderit commodo officia dolor Lorem duis la eiusmod. Aliqua reprehenderit commodo ex non excepteur duis sunt velit enim. Voluptate laboris sint cupidatat ullamco ut ea consectetur et est culpa et culpa duis.",
-  "Lorem  reprehenderit commodo officia dolor Lorem duis la eiusmod. Aliqua reprehenderit commodo ex non excepteur duis sunt velit enim. Voluptate laboris sint cupidatat ullamco ut ea consectetur et est culpa et culpa duis.",
-];
+import { getAllNoteAPI } from "../services/allAPIs";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { addNotesToStore } from "../redux/addNoteSlice";
 
 export const Notes = () => {
+  const { notes } = useSelector((state) => state.note);
+  const dispatch = useDispatch();
+
+  const getData = async () => {
+    const { data } = await getAllNoteAPI();
+    dispatch(addNotesToStore([...data].reverse()));
+  };
+  useEffect(() => {
+    getData();
+  }, []);
+
   return (
     <div className=" container flex flex-col items-center lg:items-start px-2 py-4 mt-5">
       <h1 className="text-5xl">Notes</h1>
       <TimeSort />
-      <div className="my-10 columns-1 gap-8 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-5">
-        {paraData.map((item, index) => (
+      <div className="w-full my-10 columns-[300px]">
+        {notes.map((item, index) => (
           <Note key={index} data={item} />
         ))}
-
         <AddNote />
       </div>
     </div>

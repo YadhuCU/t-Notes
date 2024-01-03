@@ -12,7 +12,7 @@
   font-family: var(--ff-primary);
 }
 
-.grid {
+.grid-app {
   display: grid;
   grid-template-columns: clamp(60px, 50%, 10vw) auto;
 }
@@ -45,6 +45,7 @@
 .add-note textarea:focus {
   border: none;
   outline: none;
+  background: none;
 }
 .add-note input {
   font-size: 2rem;

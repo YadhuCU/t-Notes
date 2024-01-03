@@ -1,26 +1,50 @@
 /* eslint-disable react/prop-types */
 import { FaFolder } from "react-icons/fa";
-
-import * as React from "react";
 import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 
+import { useState } from "react";
+import { deleteFolderAPI, getAllFoldersAPI } from "../services/allAPIs";
+import { useDispatch } from "react-redux";
+import { addFoldersToStore } from "../redux/addFolderSlice";
+import { AddFolder } from "./AddFolder";
+
 const ITEM_HEIGHT = 48;
 
-export const Folder = ({ home }) => {
-  const [anchorEl, setAnchorEl] = React.useState(null);
+export const Folder = ({ home, folder }) => {
+  const dispatch = useDispatch();
+  // MUI Thingss..
+  const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
+  const handleClick = (event) => setAnchorEl(event.currentTarget);
+  const handleClose = () => setAnchorEl(null);
+
+  const handleDeleteFolder = async (id) => {
+    let response;
+    try {
+      response = await deleteFolderAPI(id);
+    } catch (error) {
+      console.log(error);
+    }
+    if (response.status >= 200 && response.status < 300) {
+      // deletion success
+      const { data } = await getAllFoldersAPI();
+      dispatch(addFoldersToStore([...data].reverse()));
+    } else {
+      // deletion failed
+      console.log("Delete Folder Failed: ", response.status);
+    }
+    handleClose();
   };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+
   return (
     <div
-      className={`rounded-[20px] hover:shadow-inner relative bg-green-100 ${
+      style={{
+        backgroundColor: folder?.color,
+      }}
+      className={`rounded-[20px] hover:shadow-inner relative  ${
         home ? " w-40 h-24 md:w-60 md:h-40" : " w-60 h-40 "
       }  p-5 flex flex-col justify-between`}
     >
@@ -54,14 +78,26 @@ export const Folder = ({ home }) => {
             },
           }}
         >
-          <MenuItem onClick={() => handleClose("edite")}>edit</MenuItem>
-          <MenuItem onClick={() => handleClose("delete")}>delete</MenuItem>
+          <MenuItem>
+            <AddFolder
+              handleCloseEditMenu={handleClose}
+              entry={"edit"}
+              editFolder={folder}
+            />
+          </MenuItem>
+          <MenuItem onClick={() => handleDeleteFolder(folder?.id)}>
+            delete
+          </MenuItem>
         </Menu>
       </div>
-      <FaFolder style={{ fontSize: "3rem" }} className="text-green-600" />
+      <FaFolder style={{ fontSize: "3rem" }} className="text-slate-600" />
       <div>
-        <p className="text-2xl font-bold">Folder</p>
-        <p className="font-light">9/0/2024</p>
+        <p className="text-2xl font-bold">
+          {folder?.title.length > 15
+            ? folder?.title.slice(0, 15) + "..."
+            : folder?.title}
+        </p>
+        <p className="font-light">{folder?.date}</p>
       </div>
     </div>
   );
