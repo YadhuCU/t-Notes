@@ -12,6 +12,10 @@
   font-family: var(--ff-primary);
 }
 
+#root {
+  background: linear-gradient(235deg, #fef2f2, #f0fdfa);
+}
+
 .grid-app {
   display: grid;
   grid-template-columns: clamp(60px, 50%, 10vw) auto;

@@ -17,9 +17,11 @@ export const Sidebar = () => {
             <FaHome title="Home" style={{ fontSize: "1.7rem" }} />
           </Link>
         </div>
-        <div className="flex transition duration-250 ease-out  p-3 hover:bg-slate-100 text-purple-400 rounded-full items-center cursor-pointer justify-center gap-2 text-lg">
-          <HiDocumentAdd title="Add Note" style={{ fontSize: "1.7rem" }} />
-        </div>
+        {true || (
+          <div className="flex transition duration-250 ease-out  p-3 hover:bg-slate-100 text-purple-400 rounded-full items-center cursor-pointer justify-center gap-2 text-lg">
+            <HiDocumentAdd title="Add Note" style={{ fontSize: "1.7rem" }} />
+          </div>
+        )}
         <div className="flex transition duration-250 ease-out  p-3 hover:bg-slate-100 text-amber-400 rounded-full items-center cursor-pointer justify-center gap-2 text-lg">
           <Link to="/archive">
             <FaArchive title="Archive" style={{ fontSize: "1.3rem" }} />

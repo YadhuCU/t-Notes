@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
@@ -6,14 +6,25 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { IoMdTimer } from "react-icons/io";
 import { BsCalendar2DateFill } from "react-icons/bs";
 import { useDispatch } from "react-redux";
-import { deleteNoteAPI, getAllNoteAPI } from "../services/allAPIs";
+import {
+  addToArchiveAPI,
+  addToTrashAPI,
+  deleteNoteAPI,
+  getAllArchiveAPI,
+  getAllNoteAPI,
+  getSingleNoteAPI,
+  removeFromArchiveAPI,
+  updateNoteAPI,
+} from "../services/allAPIs";
 import { addNotesToStore } from "../redux/addNoteSlice";
 import { AddNote } from "./AddNote";
+import { addArchivesToStore } from "../redux/addArchiveSlice";
 
 const ITEM_HEIGHT = 48;
 /* eslint-disable react/prop-types */
-export const Note = ({ data }) => {
+export const Note = ({ data, trash, archive }) => {
   const dispatch = useDispatch();
+
   // MUI thingssss
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -22,6 +33,8 @@ export const Note = ({ data }) => {
 
   const handleDeleteNote = async (noteId) => {
     try {
+      const { data } = await getSingleNoteAPI(noteId);
+      await addToTrashAPI(data);
       await deleteNoteAPI(noteId);
     } catch (error) {
       console.log("Deletion API error: ", error);
@@ -31,10 +44,91 @@ export const Note = ({ data }) => {
     handleClose();
   };
 
-  const handleEditNote = () => {};
+  const handleDragStart = (event, note) => {
+    event.dataTransfer.setData("note", JSON.stringify(note));
+  };
+
+  const handleAddToArchive = async (note) => {
+    // if the note in Archive page
+    if (archive) {
+      // remove from the archive and update the store
+      // remove from archive db
+      await removeFromArchiveAPI(note.id);
+      // change the value 'archive' in note db
+      const singleNote = await getSingleNoteAPI(note.id);
+
+      const newSinlgeNote = {
+        ...singleNote.data,
+        archive: false,
+      };
+      await updateNoteAPI(note.id, newSinlgeNote);
+
+      // updating the store of Archive
+      const { data } = await getAllArchiveAPI();
+      dispatch(addArchivesToStore([...data].reverse()));
+    } else {
+      // in other pages
+      const { data } = await getAllArchiveAPI();
+      const isArchived = data.find((item) => item.id == note.id);
+      console.log("isArchived : ", isArchived);
+      if (isArchived) {
+        await removeFromArchiveAPI(note.id);
+        // change the value 'archive' in note db
+        const singleNote = await getSingleNoteAPI(note.id);
+
+        const newSinlgeNote = {
+          ...singleNote.data,
+          archive: false,
+        };
+        console.log(newSinlgeNote);
+        await updateNoteAPI(note.id, newSinlgeNote);
+        // updating the store
+        try {
+          const { data } = await getAllNoteAPI();
+          dispatch(addNotesToStore([...data].reverse()));
+        } catch (error) {
+          console.error("Error: ", error);
+        }
+        try {
+          const { data } = await getAllArchiveAPI();
+          dispatch(addArchivesToStore([...data].reverse()));
+        } catch (error) {
+          console.error("Error: ", error);
+        }
+      } else {
+        // fetchinge singe note to update the 'archive' field
+        const singleNote = await getSingleNoteAPI(note.id);
+        console.log("singleNote", singleNote);
+        const newSinlgeNote = {
+          ...singleNote.data,
+          archive: true,
+        };
+        console.log("newSingelNote", newSinlgeNote);
+        await updateNoteAPI(note.id, newSinlgeNote);
+        // adding note to archive db
+        await addToArchiveAPI(newSinlgeNote);
+        // updating the store
+        try {
+          const { data } = await getAllNoteAPI();
+          dispatch(addNotesToStore([...data].reverse()));
+        } catch (error) {
+          console.error("Error: ", error);
+        }
+        try {
+          const { data } = await getAllArchiveAPI();
+          dispatch(addArchivesToStore([...data].reverse()));
+        } catch (error) {
+          console.error("Error: ", error);
+        }
+      }
+    }
+    handleClose();
+  };
 
   return (
     <div
+      draggable
+      onDragStart={(event) => handleDragStart(event, data || {})}
       style={{
         backgroundColor: data.color,
       }}
@@ -67,22 +161,27 @@ export const Note = ({ data }) => {
             anchorEl={anchorEl}
             open={open}
             onClose={handleClose}
-            PaperProps={{
-              style: {
-                maxHeight: ITEM_HEIGHT * 4.5,
-                width: "20ch",
-              },
-            }}
+            // PaperProps={{
+            //   style: {
+            //     maxHeight: ITEM_HEIGHT * 4.5,
+            //     width: "20ch",
+            //   },
+            // }}
           >
-            <MenuItem onClick={() => handleEditNote(data)}>
+            <MenuItem>
               <AddNote
                 handlCloseEditMenu={handleClose}
                 currentNote={data}
                 entry={"edit"}
               />
             </MenuItem>
-            <MenuItem onClick={() => handleDeleteNote(data?.id)}>
-              delete
+            {archive || (
+              <MenuItem onClick={() => handleDeleteNote(data?.id)}>
+                {trash ? "delete" : "move to trash"}
+              </MenuItem>
+            )}
+            <MenuItem onClick={() => handleAddToArchive(data)}>
+              {data?.archive ? "unarchive" : "archive"}
             </MenuItem>
           </Menu>
         </div>

@@ -4,9 +4,15 @@ import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { Link } from "react-router-dom";
 
 import { useState } from "react";
-import { deleteFolderAPI, getAllFoldersAPI } from "../services/allAPIs";
+import {
+  deleteFolderAPI,
+  getAllFoldersAPI,
+  getSingleFolderAPI,
+  updateFolderAPI,
+} from "../services/allAPIs";
 import { useDispatch } from "react-redux";
 import { addFoldersToStore } from "../redux/addFolderSlice";
 import { AddFolder } from "./AddFolder";
@@ -39,8 +45,32 @@ export const Folder = ({ home, folder }) => {
     handleClose();
   };
 
+  const handleDrop = async (event, folderId) => {
+    const note = JSON.parse(event.dataTransfer.getData("note"));
+    const { data } = await getSingleFolderAPI(folderId);
+    // checking it's already in the folder.
+    const itemFound = data.notes.find((item) => item.id == note.id);
+    console.log("find", itemFound);
+    if (itemFound) return;
+
+    data.notes.push(note);
+    try {
+      const result = await updateFolderAPI(folderId, data);
+      console.log(result);
+      if (result.status >= 200 && result.status < 300) {
+        // success
+        const { data } = await getAllFoldersAPI();
+        dispatch(addFoldersToStore([...data].reverse()));
+      }
+    } catch (error) {
+      console.erro("Folder updation Error: ", error);
+    }
+  };
+
   return (
     <div
+      onDragOver={(event) => event.preventDefault()}
+      onDrop={(event) => handleDrop(event, folder?.id)}
       style={{
         backgroundColor: folder?.color,
       }}
@@ -71,12 +101,12 @@ export const Folder = ({ home, folder }) => {
           anchorEl={anchorEl}
           open={open}
           onClose={handleClose}
-          PaperProps={{
-            style: {
-              maxHeight: ITEM_HEIGHT * 4.5,
-              width: "20ch",
-            },
-          }}
+          // PaperProps={{
+          //   style: {
+          //     maxHeight: ITEM_HEIGHT * 4.5,
+          //     width: "20ch",
+          //   },
+          // }}
         >
           <MenuItem>
             <AddFolder
@@ -91,14 +121,16 @@ export const Folder = ({ home, folder }) => {
         </Menu>
       </div>
       <FaFolder style={{ fontSize: "3rem" }} className="text-slate-400" />
-      <div>
-        <p className="text-2xl font-bold text-stone-600">
-          {folder?.title.length > 15
-            ? folder?.title.slice(0, 15) + "..."
-            : folder?.title}
-        </p>
-        <p className="font-light">{folder?.date}</p>
-      </div>
+      <Link to={`/folders/${folder?.id}`}>
+        <div>
+          <p className="text-2xl font-bold text-stone-600">
+            {folder?.title.length > 15
+              ? folder?.title.slice(0, 15) + "..."
+              : folder?.title}
+          </p>
+          <p className="font-light">{folder?.date}</p>
+        </div>
+      </Link>
     </div>
   );
 };

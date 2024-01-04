@@ -5,8 +5,12 @@ import Home from "./pages/Home";
 import Trash from "./pages/Trash";
 import AllFolders from "./pages/AllFolders";
 import { Sidebar } from "./components/Sidebar";
+import CommonPage from "./pages/CommonPage";
+import { useSelector } from "react-redux";
 
 function App() {
+  const { folders } = useSelector((state) => state.folder);
+
   return (
     <div className="grid-app">
       <Sidebar />
@@ -15,6 +19,14 @@ function App() {
         <Route path={"/archive"} element={<Archive />} />
         <Route path={"/trash"} element={<Trash />} />
         <Route path={"/folders"} element={<AllFolders />} />
+        {folders?.length > 0 &&
+          folders.map((item, index) => (
+            <Route
+              key={index}
+              path={`/folders/${item?.id}`}
+              element={<CommonPage id={item?.id} pageTitle={item?.title} />}
+            />
+          ))}
       </Routes>
     </div>
   );

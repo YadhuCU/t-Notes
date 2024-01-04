@@ -151,12 +151,12 @@ export const AddFolder = ({ entry, editFolder, handleCloseEditMenu }) => {
                 {<FaFolder />}Create New Folder
               </label>
               <input
+                autoFocus
                 id="note-title"
                 type="text"
                 placeholder="Folder Name"
                 onChange={(e) => handleTextInputChange(e.target)}
                 value={textInput}
-                autoFocus
               />
               <div className="flex justify-between">
                 <button

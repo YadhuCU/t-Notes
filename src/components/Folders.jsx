@@ -26,7 +26,12 @@ export const Folders = () => {
   }, []);
 
   return (
-    <div className="container  flex flex-col w-full items-center lg:items-start shadow-2xl rounded-[20px] sticky top-[-130px] z-10 bg-white px-4 py-4 mt-5">
+    <div
+      style={{
+        background: "linear-gradient(235deg, #fef2f2, #f0fdfa)",
+      }}
+      className="container  flex flex-col w-full items-center lg:items-start shadow-2xl rounded-[20px] sticky top-[-130px] z-10 px-4 py-4 mt-5"
+    >
       <h1 className="text-5xl">Recent Folders</h1>
       <TimeSort type={"folder"} />
       <div

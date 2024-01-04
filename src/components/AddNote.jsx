@@ -53,7 +53,7 @@ export const AddNote = ({ currentNote, entry, handlCloseEditMenu }) => {
   const handleCloseColor = () => setAnchorEl(null);
 
   const handleKeyPress = (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
+    if (e.key === "Enter") {
       textAreaRef.current.focus();
     }
   };
@@ -115,6 +115,7 @@ export const AddNote = ({ currentNote, entry, handlCloseEditMenu }) => {
         time,
         day,
         color: color,
+        archive: false,
       };
       try {
         response = await uploadNoteAPI(singleNoteData);
