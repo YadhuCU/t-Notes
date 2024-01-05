@@ -23,6 +23,7 @@ import {
 } from "../services/allAPIs";
 import { useDispatch } from "react-redux";
 import { addFoldersToStore } from "../redux/addFolderSlice";
+import PropTypes from "prop-types";
 
 const style = {
   position: "absolute",
@@ -35,8 +36,9 @@ const style = {
   borderRadius: "20px",
   p: 4,
 };
+
 export const AddFolder = ({ entry, editFolder, handleCloseEditMenu }) => {
-  const [color, setColor] = useState(editFolder?.color || "#f5f5f4");
+  const [color, setColor] = useState(editFolder?.color || "hsl(60, 5%, 96%)");
   const [textInput, setTextInput] = useState(editFolder?.title || "");
   const dispatch = useDispatch();
 
@@ -56,7 +58,7 @@ export const AddFolder = ({ entry, editFolder, handleCloseEditMenu }) => {
   // cancel button | reset all state
   const handleCancelButton = () => {
     setTimeout(() => {
-      setColor("#f5f5f4");
+      setColor("hsl(60, 5%, 96%)");
       setTextInput("");
     }, 1000);
     setOpen(false);
@@ -69,7 +71,7 @@ export const AddFolder = ({ entry, editFolder, handleCloseEditMenu }) => {
     handleCancelButton();
     if (!textInput) return;
     editFolder && handleCloseEditMenu();
-    const date = formattedDate();
+    const date = formattedDate(new Date());
     let response;
 
     if (editFolder) {
@@ -81,10 +83,9 @@ export const AddFolder = ({ entry, editFolder, handleCloseEditMenu }) => {
         date,
       };
       try {
-        response = await updateFolderAPI(editFolder.id, newFolder);
-        console.log("Folder Updated Response: ", response);
+        await updateFolderAPI(editFolder.id, newFolder);
       } catch (error) {
-        console.log("Folder Uploading Error: ", error);
+        console.error("Folder Uploading Error: ", error);
       }
       if (response.status >= 200 && response.status < 300) {
         // success (file creation)
@@ -92,7 +93,7 @@ export const AddFolder = ({ entry, editFolder, handleCloseEditMenu }) => {
         dispatch(addFoldersToStore([...data].reverse()));
       } else {
         // failed (file creation)
-        console.log("Stataus code error ", response.status);
+        console.error("Stataus code error ", response.status);
       }
     } else {
       // folder object
@@ -104,9 +105,8 @@ export const AddFolder = ({ entry, editFolder, handleCloseEditMenu }) => {
       };
       try {
         response = await addFolderAPI(newFolder);
-        console.log("Folder Uploaded Response: ", response);
       } catch (error) {
-        console.log("Folder Uploading Error: ", error);
+        console.error("Folder Uploading Error: ", error);
       }
       if (response.status >= 200 && response.status < 300) {
         // success (file creation)
@@ -114,7 +114,7 @@ export const AddFolder = ({ entry, editFolder, handleCloseEditMenu }) => {
         dispatch(addFoldersToStore([...data].reverse()));
       } else {
         // failed (file creation)
-        console.log("Stataus code error ", response.status);
+        console.error("Stataus code error ", response.status);
       }
     }
   };
@@ -187,7 +187,7 @@ export const AddFolder = ({ entry, editFolder, handleCloseEditMenu }) => {
                     transformOrigin={{ horizontal: "right", vertical: "top" }}
                     anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                   >
-                    {colors.map((item) => (
+                    {colors?.map((item) => (
                       <MenuItem key={item}>
                         <div
                           onClick={() => handleColorPick(item)}
@@ -211,4 +211,10 @@ export const AddFolder = ({ entry, editFolder, handleCloseEditMenu }) => {
       </Modal>
     </div>
   );
+};
+
+AddFolder.propTypes = {
+  entry: PropTypes.string,
+  editFolder: PropTypes.object,
+  handleCloseEditMenu: PropTypes.func,
 };

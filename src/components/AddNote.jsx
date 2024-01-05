@@ -23,6 +23,7 @@ import {
 import { useDispatch } from "react-redux";
 import { addNotesToStore } from "../redux/addNoteSlice";
 import { formattedDate, formattedDay, formattedTime } from "../utils/formatter";
+import PropTypes from "prop-types";
 
 const style = {
   position: "absolute",
@@ -78,9 +79,9 @@ export const AddNote = ({ currentNote, entry, handlCloseEditMenu }) => {
     handleCancelButton();
     if (!textInput && !textArea) return;
     currentNote && handleCancelButton();
-    const date = formattedDate();
-    const time = formattedTime();
-    const day = formattedDay();
+    const date = formattedDate(new Date());
+    const time = formattedTime(new Date());
+    const day = formattedDay(new Date());
     let response;
 
     if (currentNote) {
@@ -97,9 +98,8 @@ export const AddNote = ({ currentNote, entry, handlCloseEditMenu }) => {
 
       try {
         response = await updateNoteAPI(currentNote.id, updatedNote);
-        console.log("updation response", response);
       } catch (error) {
-        console.log("updation Error: ", error);
+        console.error("Updation Error: ", error);
       }
       const { data } = await getAllNoteAPI();
       dispatch(addNotesToStore([...data].reverse()));
@@ -107,7 +107,6 @@ export const AddNote = ({ currentNote, entry, handlCloseEditMenu }) => {
     } else {
       // create new note and upload it to the server
       // uploading object
-      console.log("creating new Note");
       const singleNoteData = {
         title: textInput,
         body: textArea,
@@ -120,13 +119,13 @@ export const AddNote = ({ currentNote, entry, handlCloseEditMenu }) => {
       try {
         response = await uploadNoteAPI(singleNoteData);
       } catch (error) {
-        console.log("HandleUpload->uploadNoteAPI Error: ", error);
+        console.error("Error: ", error);
       }
       if (response.status >= 200 && response.status <= 300) {
         const { data } = await getAllNoteAPI();
         dispatch(addNotesToStore([...data].reverse()));
       } else {
-        console.log("Fetching Error: ", response);
+        console.error("Error: ", response);
       }
     }
   };
@@ -239,4 +238,10 @@ export const AddNote = ({ currentNote, entry, handlCloseEditMenu }) => {
       </Modal>
     </div>
   );
+};
+
+AddNote.propTypes = {
+  currentNote: PropTypes.object,
+  entry: PropTypes.string,
+  handlCloseEditMenu: PropTypes.func,
 };

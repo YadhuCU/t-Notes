@@ -18,7 +18,7 @@ export const TimeSort = ({ type }) => {
     });
     e.currentTarget.classList.add("active");
 
-    const currentDate = formattedDate();
+    const currentDate = formattedDate(new Date());
     const selection = e.currentTarget.innerText;
 
     // Sort the contents

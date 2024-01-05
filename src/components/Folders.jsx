@@ -17,7 +17,7 @@ export const Folders = () => {
       const { data } = await getAllFoldersAPI();
       dispatch(addFoldersToStore([...data].reverse()));
     } catch (error) {
-      console.log("getAllFoldersAPI error : ", error);
+      console.error("Error : ", error);
     }
   };
 

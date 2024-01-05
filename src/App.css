@@ -57,3 +57,11 @@
 .add-note textarea {
   resize: none;
 }
+.note-textarea {
+  resize: none;
+  width: 100%;
+  height: 100%;
+}
+textarea::-webkit-scrollbar {
+  width: 0px;
+}

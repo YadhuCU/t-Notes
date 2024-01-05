@@ -10,7 +10,7 @@ const AllFolders = () => {
       <h1 className="text-5xl">All Folders</h1>
       <TimeSort />
       <div className="my-10 gap-8 flex flex-wrap justify-center lg:justify-start">
-        {folders.map((item, index) => (
+        {folders?.map((item, index) => (
           <Folder key={index} folder={item} home={false} />
         ))}
       </div>

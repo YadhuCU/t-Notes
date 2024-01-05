@@ -23,10 +23,10 @@ export const Notes = () => {
       <h1 className="text-5xl">Notes</h1>
       <TimeSort type="note" />
       <div className="w-full my-10 columns-[300px]">
-        {notes.map((item, index) => (
+        <AddNote />
+        {notes?.map((item, index) => (
           <Note key={index} data={item} />
         ))}
-        <AddNote />
       </div>
     </div>
   );

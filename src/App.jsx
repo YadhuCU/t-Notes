@@ -20,7 +20,7 @@ function App() {
         <Route path={"/trash"} element={<Trash />} />
         <Route path={"/folders"} element={<AllFolders />} />
         {folders?.length > 0 &&
-          folders.map((item, index) => (
+          folders?.map((item, index) => (
             <Route
               key={index}
               path={`/folders/${item?.id}`}

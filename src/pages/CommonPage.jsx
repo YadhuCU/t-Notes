@@ -9,7 +9,6 @@ import { useSelector } from "react-redux";
 const CommonPage = ({ pageTitle, id }) => {
   const [notes, setNotes] = useState([]);
   const { folders } = useSelector((state) => state.folder);
-  console.log("Folders, ", folders);
 
   useEffect(() => {
     const newData = folders.find((item) => item.id == id);
@@ -22,7 +21,9 @@ const CommonPage = ({ pageTitle, id }) => {
       <TimeSort />
       <div className="my-10 columns-1 gap-8 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-5">
         {notes?.length > 0 &&
-          notes.map((item, index) => <Note key={index} data={item} />)}
+          notes?.map((item, index) => (
+            <Note key={index} folderId={id} data={item} />
+          ))}
       </div>
     </div>
   );

@@ -15,7 +15,7 @@ const Archive = () => {
 
   const getAllArchive = async () => {
     const { data } = await getAllArchiveAPI();
-    dispatch(addArchivesToStore([...data].reverse()));
+    dispatch(addArchivesToStore(data));
   };
 
   return (
@@ -23,8 +23,10 @@ const Archive = () => {
       <h1 className="text-5xl">Archive</h1>
       <TimeSort />
       <div className="my-10 columns-1 gap-8 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-5">
-        {archives.map((item, index) => (
-          <Note archive={true} key={index} data={item} />
+        {archives?.map((item, index) => (
+          <div key={index}>
+            <Note archive={true} data={item} />
+          </div>
         ))}
       </div>
     </div>
